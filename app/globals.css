@@ -1,0 +1,156 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated color tokens for Notion-style dashboard with Cristo Rey colors - NO BLUE */
+  --background: oklch(1 0 0); /* Pure white background for clean Notion look */
+  --foreground: oklch(0.05 0 0); /* Nearly black text for maximum contrast */
+  --card: oklch(0.99 0 0); /* Very light gray card background */
+  --card-foreground: oklch(0.05 0 0); /* Nearly black text on cards */
+  --popover: oklch(1 0 0); /* White popover */
+  --popover-foreground: oklch(0.05 0 0); /* Nearly black popover text */
+  --primary: oklch(0.45 0.28 22); /* Cristo Rey exact red #E31E24 */
+  --primary-foreground: oklch(1 0 0); /* White text on red */
+  /* Replaced navy blue secondary with dark gray */
+  --secondary: oklch(0.15 0 0); /* Dark gray instead of navy blue */
+  --secondary-foreground: oklch(1 0 0); /* White text on dark gray */
+  --muted: oklch(0.96 0 0); /* Light gray for muted elements */
+  --muted-foreground: oklch(0.35 0 0); /* Darker gray for better contrast */
+  --accent: oklch(0.97 0 0); /* Very light gray for hover states */
+  --accent-foreground: oklch(0.05 0 0); /* Nearly black text on accent */
+  --destructive: oklch(0.45 0.28 22); /* Same red as primary for consistency */
+  --destructive-foreground: oklch(1 0 0); /* White text on destructive */
+  --border: oklch(0.9 0 0); /* Slightly darker borders for definition */
+  --input: oklch(1 0 0); /* White input background */
+  --ring: oklch(0.45 0.28 22 / 0.3); /* Red focus ring */
+  /* Removed blue from chart colors, using only red, grays, and neutral colors */
+  --chart-1: oklch(0.15 0 0); /* Dark gray for charts */
+  --chart-2: oklch(0.45 0.28 22); /* Red for charts */
+  --chart-3: oklch(0.6 0.15 160); /* Green for charts */
+  --chart-4: oklch(0.65 0.2 50); /* Orange for charts */
+  --chart-5: oklch(0.7 0.15 90); /* Yellow for charts */
+  --radius: 0.5rem; /* Slightly larger radius for institutional feel */
+  /* Updated sidebar colors to match Cristo Rey institutional style - NO BLUE */
+  --sidebar: oklch(0.97 0 0); /* Very light gray sidebar background */
+  --sidebar-foreground: oklch(0.05 0 0); /* Nearly black sidebar text */
+  --sidebar-primary: oklch(0.45 0.28 22); /* Cristo Rey red for active items */
+  --sidebar-primary-foreground: oklch(1 0 0); /* White text on red sidebar */
+  --sidebar-accent: oklch(0.94 0 0); /* Light gray for sidebar hover */
+  --sidebar-accent-foreground: oklch(0.05 0 0); /* Nearly black text on sidebar hover */
+  --sidebar-border: oklch(0.88 0 0); /* More defined sidebar border */
+  --sidebar-ring: oklch(0.45 0.28 22 / 0.3); /* Red sidebar focus ring */
+}
+
+.dark {
+  /* Updated dark mode colors for Notion-style dashboard - NO BLUE */
+  --background: oklch(0.08 0 0); /* Very dark background */
+  --foreground: oklch(0.9 0 0); /* Light text */
+  --card: oklch(0.12 0 0); /* Dark card background */
+  --card-foreground: oklch(0.9 0 0); /* Light card text */
+  --popover: oklch(0.08 0 0); /* Dark popover */
+  --popover-foreground: oklch(0.9 0 0); /* Light popover text */
+  --primary: oklch(0.55 0.25 20); /* Brighter red for dark mode */
+  --primary-foreground: oklch(1 0 0); /* White text on red */
+  /* Replaced navy blue with dark gray in dark mode */
+  --secondary: oklch(0.25 0 0); /* Dark gray instead of navy */
+  --secondary-foreground: oklch(1 0 0); /* White text on dark gray */
+  --muted: oklch(0.15 0 0); /* Dark muted background */
+  --muted-foreground: oklch(0.55 0 0); /* Medium gray muted text */
+  --accent: oklch(0.18 0 0); /* Dark gray for hover states */
+  --accent-foreground: oklch(0.9 0 0); /* Light text on accent */
+  --destructive: oklch(0.6 0.22 15); /* Brighter red for destructive */
+  --destructive-foreground: oklch(1 0 0); /* White text on destructive */
+  --border: oklch(0.2 0 0); /* Dark borders */
+  --input: oklch(0.12 0 0); /* Dark input background */
+  --ring: oklch(0.55 0.25 20 / 0.3); /* Red focus ring */
+  /* Removed blue from dark mode chart colors */
+  --chart-1: oklch(0.25 0 0); /* Dark gray for charts */
+  --chart-2: oklch(0.55 0.25 20); /* Red for charts */
+  --chart-3: oklch(0.65 0.15 160); /* Brighter green for charts */
+  --chart-4: oklch(0.7 0.2 50); /* Brighter orange for charts */
+  --chart-5: oklch(0.75 0.15 90); /* Brighter yellow for charts */
+  --sidebar: oklch(0.1 0 0); /* Dark sidebar */
+  --sidebar-foreground: oklch(0.85 0 0); /* Light sidebar text */
+  --sidebar-primary: oklch(0.55 0.25 20); /* Red sidebar primary */
+  --sidebar-primary-foreground: oklch(1 0 0); /* White text on red sidebar */
+  --sidebar-accent: oklch(0.15 0 0); /* Dark sidebar accent */
+  --sidebar-accent-foreground: oklch(0.85 0 0); /* Light text on sidebar accent */
+  --sidebar-border: oklch(0.2 0 0); /* Dark sidebar border */
+  --sidebar-ring: oklch(0.55 0.25 20 / 0.3); /* Red sidebar focus ring */
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 4px);
+  /* Added sidebar color tokens to theme */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  /* Added utility classes for Notion-style dashboard */
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200;
+  }
+  .sidebar-item:hover {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground shadow-sm;
+  }
+  .sidebar-item.active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground shadow-md;
+  }
+  .notion-card {
+    @apply bg-card border border-border rounded-lg p-6 hover:shadow-md hover:border-primary/20 transition-all duration-200;
+  }
+  /* Updated Cristo Rey specific styling classes to use dark gray instead of blue */
+  .cristo-rey-header {
+    @apply bg-secondary text-secondary-foreground font-bold tracking-wide uppercase;
+  }
+  .cristo-rey-banner {
+    @apply bg-primary text-primary-foreground text-center py-4 font-bold tracking-wider uppercase;
+  }
+  .institutional-text {
+    @apply font-semibold tracking-wide uppercase text-foreground;
+  }
+}
