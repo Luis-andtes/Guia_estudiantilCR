@@ -118,7 +118,7 @@ export default function MapaPage() {
                   {filteredLocations.map((location) => (
                     <button
                       key={location.id}
-                      className={`absolute transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-lg hover:scale-125 transition-all duration-200 ${typeColors[location.type as keyof typeof typeColors]} ${selectedLocation?.id === location.id ? "scale-125 ring-4 ring-primary/30" : ""}`}
+                      className={`absolute -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow-lg ${typeColors[location.type as keyof typeof typeColors]} ${selectedLocation?.id === location.id ? "ring-4 ring-primary/30" : ""}`}
                       style={{ left: `${location.x}%`, top: `${location.y}%` }}
                       onClick={() => setSelectedLocation(location)}
                     >

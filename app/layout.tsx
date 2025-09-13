@@ -5,9 +5,12 @@ import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Institución Educativa Cristo Rey - Arauca',
+  description: 'Guía estudiantil digital',
   generator: 'v0.app',
+  icons: {
+    icon: '/logo_cristorey-removebg-preview.png',
+  },
 }
 
 export default function RootLayout({

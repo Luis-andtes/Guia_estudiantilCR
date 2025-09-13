@@ -1,12 +1,12 @@
 "use client"
 
+import Image from "next/image"
 import { useState } from "react"
 import {
   Home,
   MapPin,
   BookOpen,
   Clock,
-  Newspaper,
   GraduationCap,
   Building,
   Users,
@@ -14,23 +14,76 @@ import {
   Phone,
   Mail,
   Menu,
+  Download,
+  Search,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 
-type Section = "inicio" | "mapa" | "guia" | "horarios" | "noticias"
+type Section = "inicio" | "mapa" | "guia" | "horarios"
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState<Section>("inicio")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [selectedGrade, setSelectedGrade] = useState("9° A")
+  const [teacherSearch, setTeacherSearch] = useState("")
+
+  const teachers = [
+    "AIDA INES PEÑA NIÑO",
+    "AURA TERESA PORTILLA GARCIA",
+    "DIANA ISABEL GONZALEZ ACELAS",
+    "DIOVANIS LOPEZ VILLADIEGO",
+    "DUVAN FERNEY INFANTE PEÑA",
+    "EDDY ARLEY CRISTIANO MEDINA",
+    "EDGAR DANILO COLMENARES CONCHA",
+    "ELIZABETH DINAS BALTA",
+    "ELKIN YESID MARIN VARGAS",
+    "GLORIA YAMILE GONZALEZ CORDERO",
+    "HECTOR CLODOMIRO ROJAS SANCHEZ",
+    "IMER ZABALETA DE LA OSSA",
+    "JABITH ALCANTARA NAVARRO",
+    "JAIRO ANTONIO GALINDO",
+    "JANET CORDOBA",
+    "JESUS ALFREDO MIJARES CUBILLOS",
+    "JHORMAN CORONADO",
+    "JOGNI NIEVES",
+    "JORGE ANDRES ALBARRACIN CETINA",
+    "JOSE ALEXANDER MIJARES CUBILLOS",
+    "JOSE ASDRUBAL PEREZ HERRERA",
+    "JOSE IGNACIO GELVEZ",
+    "JOSÉ SANTOS PEÑA",
+    "KARLA YULIE CARRERO RINCON",
+    "KELLY LARITZA BAUTISTA VILLAMIZAR",
+    "LEIDY PATRICIA BAUTISTA ALDANA",
+    "LINA YOHANA MENDEZ CRISPIN",
+    "LISESA SEGURA SARMIENTO",
+    "LUIS EFRAIN FRANCO",
+    "MARIA DELIA GUAITERO DIAZ",
+    "MIGUEL ALEJANDRO PRIETO URQUIOLA",
+    "MONICA BERROTERAN BRICEÑO",
+    "RICHARD FERNEL CARVAJAL VILLAMIZAR",
+    "SONIA ESPERANZA CARRILLO BAYONA",
+    "SORANGELA CARDENAS RODRIGUEZ",
+    "YEFERSON CAÑIZARES ORTIZ",
+    "YURI DE JESUS GUERRERO",
+    "ADRIANA CHAVEZ",
+    "EVERSON RIVERA",
+    "GERSON MENA"
+  ]
+
+  const filteredTeachers = teachers.filter(teacher =>
+    teacher.toLowerCase().includes(teacherSearch.toLowerCase())
+  )
 
   const sidebarItems = [
     { id: "inicio" as Section, label: "Inicio", icon: Home },
     { id: "mapa" as Section, label: "Mapa del colegio", icon: MapPin },
     { id: "guia" as Section, label: "Guía estudiantil", icon: BookOpen },
     { id: "horarios" as Section, label: "Horarios", icon: Clock },
-    { id: "noticias" as Section, label: "Noticias/Comunicados", icon: Newspaper },
   ]
 
   const renderContent = () => {
@@ -45,11 +98,14 @@ export default function HomePage() {
             </div>
 
             <div className="text-center py-8">
-              <div className="w-32 h-32 bg-white border-4 border-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
-                <div className="text-center">
-                  <GraduationCap className="h-12 w-12 text-primary mx-auto mb-1" />
-                  <div className="text-xs font-bold text-primary">CRISTO REY</div>
-                </div>
+              <div className="w-32 h-32 bg-white border-4 border-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl overflow-hidden">
+                <Image
+                  src="/logo_cristorey-removebg-preview.png"
+                  alt="Logo Institución Educativa Cristo Rey"
+                  width={128}
+                  height={128}
+                  priority
+                />
               </div>
               <h1 className="institutional-text text-3xl md:text-4xl mb-4">INSTITUCIÓN EDUCATIVA CRISTO REY</h1>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
@@ -95,47 +151,9 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <Card className="notion-card cursor-pointer group" onClick={() => setActiveSection("noticias")}>
-                <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                    <Newspaper className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle className="text-lg institutional-text">Noticias de Actualidad</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground text-center">Comunicados importantes</p>
-                </CardContent>
-              </Card>
             </div>
 
-            <div className="notion-card">
-              <h3 className="institutional-text text-xl mb-6">Comunicados Recientes</h3>
-              <div className="space-y-4">
-                <div className="flex items-center gap-4 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                  <Badge className="bg-primary text-primary-foreground">Importante</Badge>
-                  <div className="flex-1">
-                    <p className="font-medium">Reunión de padres de familia</p>
-                    <p className="text-sm text-muted-foreground">25 de Febrero, 2024 - 2:00 PM</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
-                  <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                    Evento
-                  </Badge>
-                  <div className="flex-1">
-                    <p className="font-medium">Feria de Ciencias 2024</p>
-                    <p className="text-sm text-muted-foreground">20 de Febrero, 2024 - Todo el día</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4 p-4 bg-muted border border-border rounded-lg">
-                  <Badge variant="outline">Académico</Badge>
-                  <div className="flex-1">
-                    <p className="font-medium">Inicio de clases segundo período</p>
-                    <p className="text-sm text-muted-foreground">15 de Enero, 2024</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* sección de comunicados removida a solicitud */}
           </div>
         )
 
@@ -381,248 +399,598 @@ export default function HomePage() {
 
       case "horarios":
         return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="institutional-text text-3xl mb-2">Horarios Académicos</h2>
-              <p className="text-muted-foreground text-lg">
-                Consulta horarios de estudiantes y profesores por jornada académica
-              </p>
-            </div>
+          <div className="space-y-6">
+            <Tabs defaultValue="estudiantes" className="w-full">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="institutional-text text-3xl mb-2">Horarios de Estudiantes</h2>
+                  <p className="text-muted-foreground text-lg">Consulta los horarios por grado</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="6° A">6° A</SelectItem>
+                      <SelectItem value="6° B">6° B</SelectItem>
+                      <SelectItem value="6° C">6° C</SelectItem>
+                      <SelectItem value="6° D">6° D</SelectItem>
+                      <SelectItem value="6° E">6° E</SelectItem>
+                      <SelectItem value="7° A">7° A</SelectItem>
+                      <SelectItem value="7° B">7° B</SelectItem>
+                      <SelectItem value="7° C">7° C</SelectItem>
+                      <SelectItem value="7° D">7° D</SelectItem>
+                      <SelectItem value="7° E">7° E</SelectItem>
+                      <SelectItem value="8° A">8° A</SelectItem>
+                      <SelectItem value="8° B">8° B</SelectItem>
+                      <SelectItem value="8° C">8° C</SelectItem>
+                      <SelectItem value="8° D">8° D</SelectItem>
+                      <SelectItem value="8° E">8° E</SelectItem>
+                      <SelectItem value="9° A">9° A</SelectItem>
+                      <SelectItem value="9° B">9° B</SelectItem>
+                      <SelectItem value="9° C">9° C</SelectItem>
+                      <SelectItem value="9° D">9° D</SelectItem>
+                      <SelectItem value="10° A">10° A</SelectItem>
+                      <SelectItem value="10° B">10° B</SelectItem>
+                      <SelectItem value="10° C">10° C</SelectItem>
+                      <SelectItem value="11° A">11° A</SelectItem>
+                      <SelectItem value="11° B">11° B</SelectItem>
+                      <SelectItem value="11° C">11° C</SelectItem>
+                      <SelectItem value="11° D">11° D</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Exportar
+                  </Button>
+                </div>
+              </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="notion-card">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                    <Clock className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle className="institutional-text text-xl">Horarios de Estudiantes</CardTitle>
-                  <CardDescription>Horarios por grado y jornada académica</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-4 text-sm font-semibold border-b border-border pb-3">
-                      <span>Grado</span>
-                      <span>Jornada</span>
-                      <span>Horario</span>
-                    </div>
-                    <div className="space-y-4 text-sm">
-                      <div className="grid grid-cols-3 gap-4 p-3 bg-primary/5 rounded-lg">
-                        <span className="font-medium">6° - 7°</span>
-                        <span>Mañana</span>
-                        <span className="font-semibold">6:30 AM - 12:30 PM</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4 p-3 bg-secondary/5 rounded-lg">
-                        <span className="font-medium">8° - 9°</span>
-                        <span>Mañana</span>
-                        <span className="font-semibold">6:30 AM - 12:30 PM</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-4 p-3 bg-primary/5 rounded-lg">
-                        <span className="font-medium">10° - 11°</span>
-                        <span>Tarde</span>
-                        <span className="font-semibold">12:30 PM - 6:30 PM</span>
-                      </div>
-                    </div>
-                    <Button className="w-full bg-primary hover:bg-primary/90">Ver Horario Detallado</Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="estudiantes">Estudiantes</TabsTrigger>
+                <TabsTrigger value="profesores">Profesores</TabsTrigger>
+              </TabsList>
 
-              <Card className="notion-card">
-                <CardHeader>
-                  <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-4">
-                    <Users className="h-6 w-6 text-secondary" />
-                  </div>
-                  <CardTitle className="institutional-text text-xl">Horarios de Profesores</CardTitle>
-                  <CardDescription>Disponibilidad y horarios de atención</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-4 text-sm font-semibold border-b border-border pb-3">
-                      <span>Profesor</span>
-                      <span>Materia</span>
-                      <span>Atención</span>
+              <TabsContent value="estudiantes" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <GraduationCap className="h-5 w-5" />
+                      Horario {selectedGrade}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-collapse">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left p-3 font-semibold">Hora</th>
+                            <th className="text-left p-3 font-semibold">Lunes</th>
+                            <th className="text-left p-3 font-semibold">Martes</th>
+                            <th className="text-left p-3 font-semibold">Miércoles</th>
+                            <th className="text-left p-3 font-semibold">Jueves</th>
+                            <th className="text-left p-3 font-semibold">Viernes</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Horario para grados 6° a 9° (5:50 AM - 11:50 AM) */}
+                          {!selectedGrade.includes("10") && !selectedGrade.includes("11") ? (
+                            <>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">5:50-6:40</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aura Portilla</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">102</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Ciencias Naturales</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Diana González</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 1</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Historia</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Edgar Colmenares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">103</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">6:40-7:30</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aura Portilla</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">102</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Inglés</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Elizabeth Dinas</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">104</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Ciencias Naturales</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Diana González</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 1</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Geografía</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Edgar Colmenares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">103</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b bg-blue-50">
+                                <td className="p-3 font-medium text-blue-600">7:40-8:00</td>
+                                <td colSpan={5} className="p-3 text-center text-blue-600 font-medium">DESCANSO</td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">8:00-8:50</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Educación Física</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Elkin Marín</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Gimnasio</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Arte</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Gloria González</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Taller</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Inglés</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Elizabeth Dinas</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">104</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Historia</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Edgar Colmenares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">103</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Música</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Hector Rojas</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Aula Música</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">8:50-9:40</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Religión</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Imer Zabaleta</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">105</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aura Portilla</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">102</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Inglés</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Elizabeth Dinas</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">104</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Ciencias Naturales</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Diana González</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 1</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b bg-blue-50">
+                                <td className="p-3 font-medium text-blue-600">9:45-10:05</td>
+                                <td colSpan={5} className="p-3 text-center text-blue-600 font-medium">DESCANSO</td>
+                              </tr>
+                              <tr>
+                                <td className="p-3 font-medium">10:05-11:50</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Aura Portilla</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">102</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Diana González</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 1</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Edgar Colmenares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">103</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Elizabeth Dinas</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">104</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          ) : (
+                            /* Horario para grados 10° y 11° (5:50 AM - 2:20 PM L,M,V / 5:50 AM - 3:15 PM M,J) */
+                            <>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">5:50-6:40</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jabith Alcantara</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">201</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jairo Galindo</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">202</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Física</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jesus Mijares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 2</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jabith Alcantara</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">201</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Historia</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jorge Albarracín</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">203</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">6:40-7:30</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jairo Galindo</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">202</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Inglés</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Janet Cordoba</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">204</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jabith Alcantara</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">201</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Química</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jesus Mijares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 2</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Geografía</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jorge Albarracín</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">203</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b bg-blue-50">
+                                <td className="p-3 font-medium text-blue-600">7:40-8:00</td>
+                                <td colSpan={5} className="p-3 text-center text-blue-600 font-medium">DESCANSO</td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">8:00-8:50</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Educación Física</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jhorman Coronado</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Gimnasio</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Arte</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jogni Nieves</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Taller</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Inglés</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Janet Cordoba</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">204</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Historia</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jorge Albarracín</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">203</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Música</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jose Santos</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Aula Música</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">8:50-9:40</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Religión</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Karla Carrero</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">205</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jabith Alcantara</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">201</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jairo Galindo</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">202</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Inglés</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Janet Cordoba</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">204</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Biología</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jesus Mijares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 2</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b bg-blue-50">
+                                <td className="p-3 font-medium text-blue-600">9:45-10:05</td>
+                                <td colSpan={5} className="p-3 text-center text-blue-600 font-medium">DESCANSO</td>
+                              </tr>
+                              <tr className="border-b">
+                                <td className="p-3 font-medium">10:05-11:50</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Informática</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Kelly Bautista</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab Sistemas</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Filosofía</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Leidy Bautista</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">206</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Matemáticas</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jabith Alcantara</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">201</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Español</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jairo Galindo</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">202</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Química</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jesus Mijares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 2</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr className="border-b bg-green-50">
+                                <td className="p-3 font-medium text-green-600">11:50-12:30</td>
+                                <td colSpan={5} className="p-3 text-center text-green-600 font-medium">ALMUERZO</td>
+                              </tr>
+                              <tr>
+                                <td className="p-3 font-medium">12:30-2:20</td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jabith Alcantara</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">201</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jairo Galindo</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">202</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jesus Mijares</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">Lab 2</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Jorge Albarracín</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">203</Badge>
+                                  </div>
+                                </td>
+                                <td className="p-3">
+                                  <div>
+                                    <div className="font-semibold">Tutoría</div>
+                                    <div className="text-sm text-muted-foreground">Prof. Janet Cordoba</div>
+                                    <Badge variant="secondary" className="text-xs mt-1">204</Badge>
+                                  </div>
+                                </td>
+                              </tr>
+                            </>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
-                    <div className="space-y-4 text-sm">
-                      <div className="grid grid-cols-3 gap-4 p-3 bg-secondary/5 rounded-lg">
-                        <span className="font-medium">Prof. García</span>
-                        <span>Matemáticas</span>
-                        <span className="font-semibold">2:00 - 3:00 PM</span>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="profesores" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="h-5 w-5" />
+                      Horarios de Profesores
+                    </CardTitle>
+                    <CardDescription>Busca y consulta los horarios de los docentes</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Buscar profesor por nombre..."
+                          value={teacherSearch}
+                          onChange={(e) => setTeacherSearch(e.target.value)}
+                          className="pl-10"
+                        />
                       </div>
-                      <div className="grid grid-cols-3 gap-4 p-3 bg-primary/5 rounded-lg">
-                        <span className="font-medium">Prof. López</span>
-                        <span>Español</span>
-                        <span className="font-semibold">10:00 - 11:00 AM</span>
+                      
+                      <div className="text-sm text-muted-foreground">
+                        {filteredTeachers.length} de {teachers.length} profesores
                       </div>
-                      <div className="grid grid-cols-3 gap-4 p-3 bg-secondary/5 rounded-lg">
-                        <span className="font-medium">Prof. Martínez</span>
-                        <span>Ciencias</span>
-                        <span className="font-semibold">3:00 - 4:00 PM</span>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                        {filteredTeachers.map((teacher, index) => (
+                          <div key={index} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className="font-semibold text-sm">{teacher}</div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {teacher.includes("GARCIA") || teacher.includes("GONZALEZ") ? "Matemáticas" :
+                               teacher.includes("MARTINEZ") || teacher.includes("RODRIGUEZ") ? "Español" :
+                               teacher.includes("LOPEZ") || teacher.includes("PEREZ") ? "Ciencias" :
+                               teacher.includes("GALINDO") || teacher.includes("FRANCO") ? "Educación Física" :
+                               teacher.includes("CORDOBA") || teacher.includes("CHAVEZ") ? "Arte" :
+                               teacher.includes("PRIETO") || teacher.includes("CARVAJAL") ? "Informática" :
+                               teacher.includes("CARRILLO") || teacher.includes("CARDENAS") ? "Historia" :
+                               teacher.includes("GUERRERO") || teacher.includes("RIVERA") ? "Inglés" :
+                               "Asignatura por definir"}
+                            </div>
+                            <div className="text-xs font-medium mt-2 text-primary">
+                              {index % 3 === 0 ? "8:00 - 10:00 AM" :
+                               index % 3 === 1 ? "10:00 - 12:00 PM" :
+                               "2:00 - 4:00 PM"}
+                            </div>
+                          </div>
+                        ))}
                       </div>
+                      
+                      {filteredTeachers.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No se encontraron profesores con ese nombre
+                        </div>
+                      )}
                     </div>
-                    <Button
-                      variant="outline"
-                      className="w-full border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground bg-transparent"
-                    >
-                      Ver Todos los Profesores
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
           </div>
         )
 
-      case "noticias":
-        return (
-          <div className="space-y-8">
-            <div>
-              <h2 className="institutional-text text-3xl mb-2">Noticias de Actualidad</h2>
-              <p className="text-muted-foreground text-lg">
-                Mantente informado sobre eventos y comunicados institucionales importantes
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="notion-card group">
-                <CardHeader>
-                  <Badge className="w-fit mb-4 bg-primary text-primary-foreground">Comunicado Oficial</Badge>
-                  <CardTitle className="text-lg institutional-text">Inicio de Clases 2024</CardTitle>
-                  <CardDescription className="text-muted-foreground">15 de Enero, 2024</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    Información importante sobre el inicio del año escolar 2024, horarios académicos, requisitos de
-                    matrícula y protocolo de ingreso...
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors bg-transparent"
-                  >
-                    Leer Comunicado Completo
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="notion-card group">
-                <CardHeader>
-                  <Badge variant="secondary" className="w-fit mb-4 bg-secondary text-secondary-foreground">
-                    Evento Académico
-                  </Badge>
-                  <CardTitle className="text-lg institutional-text">Feria de Ciencias 2024</CardTitle>
-                  <CardDescription className="text-muted-foreground">20 de Febrero, 2024</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    Invitamos a toda la comunidad educativa a participar en nuestra feria anual de ciencias. Proyectos
-                    innovadores de estudiantes...
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="group-hover:bg-secondary group-hover:text-secondary-foreground transition-colors bg-transparent"
-                  >
-                    Ver Detalles del Evento
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="notion-card group">
-                <CardHeader>
-                  <Badge className="w-fit mb-4 bg-primary text-primary-foreground">Reunión Importante</Badge>
-                  <CardTitle className="text-lg institutional-text">Reunión de Padres de Familia</CardTitle>
-                  <CardDescription className="text-muted-foreground">25 de Febrero, 2024</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    Convocatoria a reunión general de padres de familia para tratar temas académicos, disciplinarios y
-                    proyectos institucionales...
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors bg-transparent"
-                  >
-                    Confirmar Asistencia
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="notion-card group">
-                <CardHeader>
-                  <Badge variant="outline" className="w-fit mb-4">
-                    Rendición de Cuentas
-                  </Badge>
-                  <CardTitle className="text-lg institutional-text">Informe de Gestión 2023</CardTitle>
-                  <CardDescription className="text-muted-foreground">10 de Enero, 2024</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    Presentación del informe anual de gestión institucional, logros académicos, proyectos realizados y
-                    metas para el 2024...
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors bg-transparent"
-                  >
-                    Descargar Informe
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="notion-card group">
-                <CardHeader>
-                  <Badge variant="secondary" className="w-fit mb-4 bg-secondary text-secondary-foreground">
-                    Actividad Cultural
-                  </Badge>
-                  <CardTitle className="text-lg institutional-text">Semana Cultural 2024</CardTitle>
-                  <CardDescription className="text-muted-foreground">5 de Marzo, 2024</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    Celebración de la semana cultural con actividades artísticas, deportivas y académicas. Participación
-                    de toda la comunidad educativa...
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="group-hover:bg-secondary group-hover:text-secondary-foreground transition-colors bg-transparent"
-                  >
-                    Ver Programación
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="notion-card group">
-                <CardHeader>
-                  <Badge className="w-fit mb-4 bg-primary text-primary-foreground">Logro Institucional</Badge>
-                  <CardTitle className="text-lg institutional-text">Reconocimiento Académico</CardTitle>
-                  <CardDescription className="text-muted-foreground">28 de Enero, 2024</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    Nuestra institución recibió reconocimiento por excelencia académica y calidad educativa por parte
-                    del Ministerio de Educación Nacional...
-                  </p>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors bg-transparent"
-                  >
-                    Leer Reconocimiento
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="text-center">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Ver Todas las Noticias
-              </Button>
-            </div>
-          </div>
-        )
+      // sección noticias removida
 
       default:
         return null
@@ -637,16 +1005,16 @@ export default function HomePage() {
 
       <aside
         className={`
-        fixed lg:static inset-y-0 left-0 z-50 w-72 bg-sidebar border-r border-sidebar-border
+        fixed inset-y-0 left-0 z-50 w-72 bg-sidebar border-r border-sidebar-border h-screen overflow-hidden
         transform transition-transform duration-200 ease-in-out
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
       `}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
           <div className="p-6 border-b border-sidebar-border bg-primary/5">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-md">
-                <GraduationCap className="h-6 w-6 text-primary-foreground" />
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-white border border-primary shadow-md">
+                <Image src="/logo_cristorey-removebg-preview.png" alt="Logo Cristo Rey" width={48} height={48} />
               </div>
               <div>
                 <h1 className="institutional-text text-base">CRISTO REY</h1>
@@ -655,8 +1023,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          <nav className="flex-1 p-4">
-            <div className="space-y-2">
+          <nav className="flex-1 p-4 overflow-hidden">
+            <div className="space-y-2 h-full overflow-y-auto">
               {sidebarItems.map((item) => {
                 const Icon = item.icon
                 return (
@@ -694,7 +1062,7 @@ export default function HomePage() {
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex-1 flex flex-col min-w-0 lg:ml-72">
         <header className="lg:hidden cristo-rey-header p-4">
           <div className="flex items-center justify-between">
             <button
@@ -703,8 +1071,13 @@ export default function HomePage() {
             >
               <Menu className="h-5 w-5 text-secondary-foreground" />
             </button>
-            <h1 className="institutional-text text-sm">CRISTO REY</h1>
-            <div className="w-9" />
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full overflow-hidden bg-white border border-primary">
+                <Image src="/logo_cristorey-removebg-preview.png" alt="Logo" width={28} height={28} />
+              </div>
+              <h1 className="institutional-text text-sm">CRISTO REY</h1>
+            </div>
+            <div className="w-3" />
           </div>
         </header>
 
