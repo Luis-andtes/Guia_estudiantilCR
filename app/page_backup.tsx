@@ -16,8 +16,6 @@ import {
   Menu,
   Download,
   Search,
-  Bot,
-  Send,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -25,18 +23,95 @@ import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import Link from "next/link"
 
-type Section = "inicio" | "mapa" | "guia" | "horarios" | "chatbot"
+type Section = "inicio" | "mapa" | "guia" | "horarios"
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState<Section>("inicio")
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedGrade, setSelectedGrade] = useState("9° A")
   const [teacherSearch, setTeacherSearch] = useState("")
-  const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  // Función para generar horarios únicos por grado
+  const generateScheduleForGrade = (grade: string) => {
+    // Materias base
+    const subjects = [
+      { name: "Matemáticas", teachers: ["Prof. Aida Peña", "Prof. Carlos Mendoza", "Prof. María López"], rooms: ["101", "102", "103"] },
+      { name: "Español", teachers: ["Prof. Aura Portilla", "Prof. Ana García", "Prof. Luis Rodríguez"], rooms: ["201", "202", "203"] },
+      { name: "Ciencias Naturales", teachers: ["Prof. Diana González", "Prof. Roberto Silva", "Prof. Carmen Vega"], rooms: ["Lab 1", "Lab 2", "301"] },
+      { name: "Inglés", teachers: ["Prof. Elizabeth Dinas", "Prof. John Smith", "Prof. Sarah Johnson"], rooms: ["104", "204", "304"] },
+      { name: "Historia", teachers: ["Prof. Edgar Colmenares", "Prof. Patricia Ruiz", "Prof. Miguel Torres"], rooms: ["105", "205", "305"] },
+      { name: "Geografía", teachers: ["Prof. Edgar Colmenares", "Prof. Laura Martínez", "Prof. Diego Herrera"], rooms: ["106", "206", "306"] },
+      { name: "Educación Física", teachers: ["Prof. Elkin Marín", "Prof. Carlos Pérez", "Prof. Sofia Castro"], rooms: ["Gimnasio", "Cancha", "Patio"] },
+      { name: "Arte", teachers: ["Prof. Gloria González", "Prof. Ricardo Vargas", "Prof. Elena Morales"], rooms: ["Taller", "Aula Arte", "107"] },
+      { name: "Música", teachers: ["Prof. Hector Rojas", "Prof. Andrea Jiménez", "Prof. Fernando Díaz"], rooms: ["Aula Música", "Auditorio", "108"] },
+      { name: "Ética", teachers: ["Prof. Janet Córdoba", "Prof. Jorge Ramírez", "Prof. Isabel Moreno"], rooms: ["109", "209", "309"] },
+      { name: "Religión", teachers: ["Prof. Padre Miguel", "Prof. Hermana Ana", "Prof. Padre José"], rooms: ["Capilla", "110", "210"] },
+      { name: "Tecnología", teachers: ["Prof. Sandra López", "Prof. Andrés Rojas", "Prof. Natalia Vega"], rooms: ["Sala Informática", "Lab Tecno", "111"] }
+    ]
+
+    // Horarios base (diferentes para cada grado)
+    const timeSlots = [
+      { time: "5:50-6:40", isBreak: false },
+      { time: "6:40-7:30", isBreak: false },
+      { time: "7:40-8:00", isBreak: true },
+      { time: "8:00-8:50", isBreak: false },
+      { time: "8:50-9:40", isBreak: false },
+      { time: "9:40-10:30", isBreak: false },
+      { time: "10:30-11:20", isBreak: false },
+      { time: "11:20-12:10", isBreak: false }
+    ]
+
+    // Para grados 10° y 11°, agregar más horarios
+    if (grade.includes("10") || grade.includes("11")) {
+      timeSlots.push(
+        { time: "12:10-1:00", isBreak: false },
+        { time: "1:00-1:50", isBreak: false },
+        { time: "1:50-2:40", isBreak: false }
+      )
+      if (grade.includes("11")) {
+        timeSlots.push({ time: "2:40-3:30", isBreak: false })
+      }
+    }
+
+    // Generar horario único basado en el grado
+    const gradeHash = grade.split('').reduce((a, b) => a + b.charCodeAt(0), 0)
+    const schedule: any[] = []
+
+    timeSlots.forEach((slot, slotIndex) => {
+      if (slot.isBreak) {
+        schedule.push({
+          time: slot.time,
+          isBreak: true,
+          content: "DESCANSO"
+        })
+      } else {
+        const daySchedule: any[] = []
+        const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
+        
+        days.forEach((day, dayIndex) => {
+          const subjectIndex = (gradeHash + slotIndex + dayIndex) % subjects.length
+          const subject = subjects[subjectIndex]
+          const teacherIndex = (gradeHash + dayIndex) % subject.teachers.length
+          const roomIndex = (gradeHash + slotIndex) % subject.rooms.length
+          
+          daySchedule.push({
+            subject: subject.name,
+            teacher: subject.teachers[teacherIndex],
+            room: subject.rooms[roomIndex]
+          })
+        })
+        
+        schedule.push({
+          time: slot.time,
+          isBreak: false,
+          content: daySchedule
+        })
+      }
+    })
+
+    return schedule
+  }
 
   const teachers = [
     "AIDA INES PEÑA NIÑO",
@@ -85,24 +160,11 @@ export default function HomePage() {
     teacher.toLowerCase().includes(teacherSearch.toLowerCase())
   )
 
-  // Función para generar el nombre del archivo de imagen del horario
-  const getTeacherScheduleImage = (teacherName: string) => {
-    const folderName = teacherName.replace(/\s+/g, '_').toUpperCase()
-    return `/horarios-docentes/${folderName}/image.png`
-  }
-
-  // Función para abrir el modal con el horario del docente
-  const openTeacherSchedule = (teacherName: string) => {
-    setSelectedTeacher(teacherName)
-    setIsModalOpen(true)
-  }
-
   const sidebarItems = [
     { id: "inicio" as Section, label: "Inicio", icon: Home },
     { id: "mapa" as Section, label: "Mapa del colegio", icon: MapPin },
     { id: "guia" as Section, label: "Guía estudiantil", icon: BookOpen },
     { id: "horarios" as Section, label: "Horarios", icon: Clock },
-    { id: "chatbot" as Section, label: "Chatbot de Ayuda", icon: Bot }
   ]
 
   const renderContent = () => {
@@ -169,20 +231,6 @@ export default function HomePage() {
                   <p className="text-sm text-muted-foreground text-center">Estudiantes y profesores</p>
                 </CardContent>
               </Card>
-
-              <Link href="/chatbot" className="block">
-                <Card className="notion-card cursor-pointer group h-full flex flex-col">
-                  <CardHeader className="text-center pb-4 flex-shrink-0">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                      <Bot className="h-8 w-8 text-primary" />
-                    </div>
-                    <CardTitle className="text-lg institutional-text">Chatbot Estudiantil</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex items-center justify-center">
-                    <p className="text-sm text-muted-foreground text-center">Haz preguntas y recibe guía paso a paso</p>
-                  </CardContent>
-                </Card>
-              </Link>
 
             </div>
 
@@ -430,58 +478,53 @@ export default function HomePage() {
           </div>
         )
 
-      case "chatbot":
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="institutional-text text-3xl mb-2">Chatbot de Ayuda</h2>
-              <p className="text-muted-foreground text-lg">
-                Haz preguntas y recibe orientación sobre cualquier tema del colegio
-              </p>
-            </div>
-            
-            <Card className="h-[70vh] flex flex-col">
-              <CardContent className="flex-1 flex flex-col p-0">
-                <div className="flex-1 p-6 overflow-y-auto space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-primary/10 p-3 rounded-full">
-                      <Bot className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-4 max-w-[85%]">
-                      <p className="text-sm">
-                        ¡Hola! Soy tu asistente virtual del colegio. Puedo ayudarte con horarios, 
-                        procesos de matrícula, ubicación de aulas, noticias y más. 
-                        ¿En qué te puedo ayudar hoy?
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="border-t p-4">
-                  <form className="flex gap-2">
-                    <Input 
-                      placeholder="Escribe tu pregunta..."
-                      className="flex-1"
-                    />
-                    <Button type="submit">
-                      <Send className="h-4 w-4 mr-2" />
-                      Enviar
-                    </Button>
-                  </form>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )
-
       case "horarios":
         return (
           <div className="space-y-6">
             <Tabs defaultValue="estudiantes" className="w-full">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="institutional-text text-3xl mb-2">Horarios Académicos</h2>
-                  <p className="text-muted-foreground text-lg">Consulta los horarios de estudiantes y profesores</p>
+                  <h2 className="institutional-text text-3xl mb-2">Horarios de Estudiantes</h2>
+                  <p className="text-muted-foreground text-lg">Consulta los horarios por grado</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Select value={selectedGrade} onValueChange={setSelectedGrade}>
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="6° A">6° A</SelectItem>
+                      <SelectItem value="6° B">6° B</SelectItem>
+                      <SelectItem value="6° C">6° C</SelectItem>
+                      <SelectItem value="6° D">6° D</SelectItem>
+                      <SelectItem value="6° E">6° E</SelectItem>
+                      <SelectItem value="7° A">7° A</SelectItem>
+                      <SelectItem value="7° B">7° B</SelectItem>
+                      <SelectItem value="7° C">7° C</SelectItem>
+                      <SelectItem value="7° D">7° D</SelectItem>
+                      <SelectItem value="7° E">7° E</SelectItem>
+                      <SelectItem value="8° A">8° A</SelectItem>
+                      <SelectItem value="8° B">8° B</SelectItem>
+                      <SelectItem value="8° C">8° C</SelectItem>
+                      <SelectItem value="8° D">8° D</SelectItem>
+                      <SelectItem value="8° E">8° E</SelectItem>
+                      <SelectItem value="9° A">9° A</SelectItem>
+                      <SelectItem value="9° B">9° B</SelectItem>
+                      <SelectItem value="9° C">9° C</SelectItem>
+                      <SelectItem value="9° D">9° D</SelectItem>
+                      <SelectItem value="10° A">10° A</SelectItem>
+                      <SelectItem value="10° B">10° B</SelectItem>
+                      <SelectItem value="10° C">10° C</SelectItem>
+                      <SelectItem value="11° A">11° A</SelectItem>
+                      <SelectItem value="11° B">11° B</SelectItem>
+                      <SelectItem value="11° C">11° C</SelectItem>
+                      <SelectItem value="11° D">11° D</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-2" />
+                    Exportar
+                  </Button>
                 </div>
               </div>
 
@@ -491,47 +534,6 @@ export default function HomePage() {
               </TabsList>
 
               <TabsContent value="estudiantes" className="mt-6">
-                <div className="flex items-center gap-4 mb-6">
-                  <div>
-                    <h3 className="institutional-text text-xl mb-2">Horarios de Estudiantes</h3>
-                    <p className="text-muted-foreground">Selecciona el grado para consultar su horario</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Select value={selectedGrade} onValueChange={setSelectedGrade}>
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="6° A">6° A</SelectItem>
-                        <SelectItem value="6° B">6° B</SelectItem>
-                        <SelectItem value="6° C">6° C</SelectItem>
-                        <SelectItem value="6° D">6° D</SelectItem>
-                        <SelectItem value="6° E">6° E</SelectItem>
-                        <SelectItem value="7° A">7° A</SelectItem>
-                        <SelectItem value="7° B">7° B</SelectItem>
-                        <SelectItem value="7° C">7° C</SelectItem>
-                        <SelectItem value="7° D">7° D</SelectItem>
-                        <SelectItem value="7° E">7° E</SelectItem>
-                        <SelectItem value="8° A">8° A</SelectItem>
-                        <SelectItem value="8° B">8° B</SelectItem>
-                        <SelectItem value="8° C">8° C</SelectItem>
-                        <SelectItem value="8° D">8° D</SelectItem>
-                        <SelectItem value="8° E">8° E</SelectItem>
-                        <SelectItem value="9° A">9° A</SelectItem>
-                        <SelectItem value="9° B">9° B</SelectItem>
-                        <SelectItem value="9° C">9° C</SelectItem>
-                        <SelectItem value="9° D">9° D</SelectItem>
-                        <SelectItem value="10° A">10° A</SelectItem>
-                        <SelectItem value="10° B">10° B</SelectItem>
-                        <SelectItem value="10° C">10° C</SelectItem>
-                        <SelectItem value="11° A">11° A</SelectItem>
-                        <SelectItem value="11° B">11° B</SelectItem>
-                        <SelectItem value="11° C">11° C</SelectItem>
-                        <SelectItem value="11° D">11° D</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -553,70 +555,28 @@ export default function HomePage() {
                           </tr>
                         </thead>
                         <tbody>
-                          {/* Horario para grados 6° a 9° (5:50 AM - 11:50 AM) */}
-                          {!selectedGrade.includes("10") && !selectedGrade.includes("11") ? (
-                            <>
-                              <tr className="border-b">
-                                <td className="p-3 font-medium">5:50-6:40</td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Matemáticas</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
-                                  </div>
+                          {generateScheduleForGrade(selectedGrade).map((slot, index) => (
+                            <tr key={index} className={`border-b ${slot.isBreak ? 'bg-blue-50' : ''}`}>
+                              <td className={`p-3 font-medium ${slot.isBreak ? 'text-blue-600' : ''}`}>
+                                {slot.time}
+                              </td>
+                              {slot.isBreak ? (
+                                <td colSpan={5} className="p-3 text-center text-blue-600 font-medium">
+                                  {slot.content}
                                 </td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Español</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Aura Portilla</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">102</Badge>
-                                  </div>
-                                </td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Ciencias Naturales</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Diana González</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">Lab 1</Badge>
-                                  </div>
-                                </td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Matemáticas</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
-                                  </div>
-                                </td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Historia</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Edgar Colmenares</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">103</Badge>
-                                  </div>
-                                </td>
-                              </tr>
-                              <tr className="border-b">
-                                <td className="p-3 font-medium">6:40-7:30</td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Español</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Aura Portilla</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">102</Badge>
-                                  </div>
-                                </td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Inglés</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Elizabeth Dinas</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">104</Badge>
-                                  </div>
-                                </td>
-                                <td className="p-3">
-                                  <div>
-                                    <div className="font-semibold">Matemáticas</div>
-                                    <div className="text-sm text-muted-foreground">Prof. Aida Peña</div>
-                                    <Badge variant="secondary" className="text-xs mt-1">101</Badge>
-                                  </div>
-                                </td>
+                              ) : (
+                                slot.content.map((day: any, dayIndex: number) => (
+                                  <td key={dayIndex} className="p-3">
+                                    <div>
+                                      <div className="font-semibold">{day.subject}</div>
+                                      <div className="text-sm text-muted-foreground">{day.teacher}</div>
+                                      <Badge variant="secondary" className="text-xs mt-1">{day.room}</Badge>
+                                    </div>
+                                  </td>
+                                ))
+                              )}
+                            </tr>
+                          ))}
                                 <td className="p-3">
                                   <div>
                                     <div className="font-semibold">Ciencias Naturales</div>
@@ -1034,11 +994,7 @@ export default function HomePage() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
                         {filteredTeachers.map((teacher, index) => (
-                          <div 
-                            key={index} 
-                            className="p-4 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer hover:border-primary/30 hover:shadow-sm"
-                            onClick={() => openTeacherSchedule(teacher)}
-                          >
+                          <div key={index} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                             <div className="font-semibold text-sm">{teacher}</div>
                             <div className="text-xs text-muted-foreground mt-1">
                               {teacher.includes("GARCIA") || teacher.includes("GONZALEZ") ? "Matemáticas" :
@@ -1055,9 +1011,6 @@ export default function HomePage() {
                               {index % 3 === 0 ? "8:00 - 10:00 AM" :
                                index % 3 === 1 ? "10:00 - 12:00 PM" :
                                "2:00 - 4:00 PM"}
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1 italic">
-                              Click para ver horario
                             </div>
                           </div>
                         ))}
@@ -1116,12 +1069,11 @@ export default function HomePage() {
                 return (
                   <button
                     key={item.id}
-                    onClick={() => setActiveSection(item.id)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
-                      activeSection === item.id
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
+                    onClick={() => {
+                      setActiveSection(item.id)
+                      setSidebarOpen(false)
+                    }}
+                    className={`sidebar-item w-full text-left ${activeSection === item.id ? "active" : ""}`}
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{item.label}</span>
@@ -1172,42 +1124,6 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto">{renderContent()}</div>
         </div>
       </main>
-
-      {/* Modal para mostrar horarios de docentes */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-[95vw] h-[95vh] max-w-none max-h-none overflow-auto p-2 flex flex-col">
-          <DialogHeader className="flex-shrink-0 mb-4">
-            <DialogTitle className="text-xl font-bold">
-              Horario de {selectedTeacher}
-            </DialogTitle>
-          </DialogHeader>
-          {selectedTeacher && (
-            <div className="flex-1 flex items-center justify-center">
-              <Image
-                src={getTeacherScheduleImage(selectedTeacher)}
-                alt={`Horario de ${selectedTeacher}`}
-                width={1600}
-                height={1200}
-                className="max-w-full max-h-full object-contain rounded-lg border shadow-lg"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = `
-                      <div class="text-center py-8 text-muted-foreground">
-                        <div class="text-lg font-semibold mb-2">Horario no disponible</div>
-                        <p>La imagen del horario para ${selectedTeacher} aún no está disponible.</p>
-                        <p class="text-sm mt-2">Por favor, contacta a la administración para más información.</p>
-                      </div>
-                    `;
-                  }
-                }}
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

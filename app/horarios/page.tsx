@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, Clock, User, GraduationCap, Search, Download } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import Link from "next/link"
 
 const teachersSchedule = [
@@ -138,6 +139,84 @@ const studentSchedules = {
 const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes"]
 const grades = ["9° A", "9° B", "10° A", "10° B", "11° A", "11° B"]
 
+
+// Utilidad para normalizar el nombre del docente a nombre de carpeta
+function getFolderName(name: string) {
+  return name
+    .toUpperCase()
+    .replace(/\./g, "")
+    .replace(/ /g, "_")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+}
+
+// Componente para mostrar el horario del docente como imagen o PDF
+function TeacherScheduleModal({ teacher }: { teacher: any }) {
+  // Normalizamos el nombre para buscar la carpeta
+  const folderName = getFolderName(teacher.name)
+  const [fileUrl, setFileUrl] = useState<string | null>(null)
+  const [fileType, setFileType] = useState<'image' | 'pdf' | null>(null)
+
+  useEffect(() => {
+    // Buscamos primero PNG, luego JPG, luego PDF
+    const basePath = `/horarios-docentes/${folderName}/`;
+    fetch(basePath + 'image.png', { method: 'HEAD' })
+      .then(res => {
+        if (res.ok) {
+          setFileUrl(basePath + 'image.png');
+          setFileType('image');
+        } else {
+          fetch(basePath + 'image.jpg', { method: 'HEAD' })
+            .then(res2 => {
+              if (res2.ok) {
+                setFileUrl(basePath + 'image.jpg');
+                setFileType('image');
+              } else {
+                fetch(basePath + 'image.pdf', { method: 'HEAD' })
+                  .then(res3 => {
+                    if (res3.ok) {
+                      setFileUrl(basePath + 'image.pdf');
+                      setFileType('pdf');
+                    } else {
+                      setFileUrl(null);
+                      setFileType(null);
+                    }
+                  })
+              }
+            })
+        }
+      })
+  }, [teacher])
+
+  if (!fileUrl) {
+    return <div className="text-center text-muted-foreground py-12">No hay horario disponible para este docente.</div>;
+  }
+
+  return (
+    <div className="flex justify-center items-center w-full">
+      {fileType === 'image' ? (
+        <img
+          src={fileUrl}
+          alt={`Horario de ${teacher.name}`}
+          style={{
+            maxWidth: '100%',
+            width: '100%',
+            height: 'auto',
+            borderRadius: '1rem',
+            boxShadow: '0 2px 16px rgba(0,0,0,0.08)',
+            objectFit: 'contain',
+          }}
+        />
+      ) : (
+        <iframe
+          src={fileUrl}
+          title={`Horario de ${teacher.name}`}
+          style={{ width: '100%', minHeight: '70vh', borderRadius: '1rem', background: '#fff' }}
+        />
+      )}
+    </div>
+  )
+}
+
 export default function HorariosPage() {
   const [selectedTeacher, setSelectedTeacher] = useState<(typeof teachersSchedule)[0] | null>(null)
   const [selectedGrade, setSelectedGrade] = useState("9° A")
@@ -174,7 +253,7 @@ export default function HorariosPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="w-full py-6">
         <Tabs defaultValue="students" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 max-w-md">
             <TabsTrigger value="students" className="flex items-center space-x-2">
@@ -270,7 +349,7 @@ export default function HorariosPage() {
 
           {/* Teacher Schedules */}
           <TabsContent value="teachers" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
               {/* Teachers List */}
               <div className="lg:col-span-1 space-y-4">
                 <div>
@@ -309,67 +388,27 @@ export default function HorariosPage() {
                 </div>
               </div>
 
-              {/* Teacher Schedule */}
-              <div className="lg:col-span-2">
-                {selectedTeacher ? (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <User className="h-5 w-5" />
-                        <span>Horario - {selectedTeacher.name}</span>
-                      </CardTitle>
-                      <CardDescription>
-                        {selectedTeacher.subject} • {selectedTeacher.office}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="overflow-x-auto">
-                        <table className="w-full border-collapse">
-                          <thead>
-                            <tr className="border-b">
-                              {days.map((day) => (
-                                <th key={day} className="text-left p-3 font-medium min-w-48">
-                                  {day}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              {days.map((day) => (
-                                <td key={day} className="p-3 align-top">
-                                  <div className="space-y-2">
-                                    {selectedTeacher.schedule[day as keyof typeof selectedTeacher.schedule]?.map(
-                                      (classInfo, index) => (
-                                        <div key={index} className="bg-muted/30 p-2 rounded-lg">
-                                          <div className="font-medium text-sm">{classInfo.time}</div>
-                                          <div className="text-sm">{classInfo.class}</div>
-                                          <Badge variant="outline" className="text-xs mt-1">
-                                            {classInfo.room}
-                                          </Badge>
-                                        </div>
-                                      ),
-                                    ) || <div className="text-xs text-muted-foreground">Sin clases</div>}
-                                  </div>
-                                </td>
-                              ))}
-                            </tr>
-                          </tbody>
-                        </table>
+              {/* Teacher Schedule Modal */}
+              <Dialog open={!!selectedTeacher} onOpenChange={(open) => !open && setSelectedTeacher(null)}>
+                <DialogContent className="!max-w-[95vw] !max-h-[95vh] w-full h-full p-6 overflow-hidden">
+                  {selectedTeacher && (
+                    <>
+                      <DialogHeader>
+                        <DialogTitle className="flex items-center space-x-2 text-2xl">
+                          <User className="h-6 w-6" />
+                          <span>Horario - {selectedTeacher.name}</span>
+                        </DialogTitle>
+                        <DialogDescription className="text-base">
+                          {selectedTeacher.subject} • {selectedTeacher.office}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex-1 overflow-auto">
+                        <TeacherScheduleModal teacher={selectedTeacher} />
                       </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card>
-                    <CardContent className="flex items-center justify-center h-64">
-                      <div className="text-center text-muted-foreground">
-                        <User className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p>Selecciona un profesor para ver su horario</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+                    </>
+                  )}
+                </DialogContent>
+              </Dialog>
             </div>
           </TabsContent>
         </Tabs>
