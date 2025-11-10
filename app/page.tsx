@@ -16,8 +16,6 @@ import {
   Menu,
   Download,
   Search,
-  Bot,
-  Send,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -28,7 +26,7 @@ import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import Link from "next/link"
 
-type Section = "inicio" | "mapa" | "guia" | "horarios" | "chatbot"
+type Section = "inicio" | "mapa" | "guia" | "horarios"
 
 export default function HomePage() {
   const [activeSection, setActiveSection] = useState<Section>("inicio")
@@ -101,8 +99,7 @@ export default function HomePage() {
     { id: "inicio" as Section, label: "Inicio", icon: Home },
     { id: "mapa" as Section, label: "Mapa del colegio", icon: MapPin },
     { id: "guia" as Section, label: "Guía estudiantil", icon: BookOpen },
-    { id: "horarios" as Section, label: "Horarios", icon: Clock },
-    { id: "chatbot" as Section, label: "Chatbot de Ayuda", icon: Bot }
+    { id: "horarios" as Section, label: "Horarios", icon: Clock }
   ]
 
   const renderContent = () => {
@@ -170,20 +167,6 @@ export default function HomePage() {
                 </CardContent>
               </Card>
 
-              <Link href="/chatbot" className="block">
-                <Card className="notion-card cursor-pointer group h-full flex flex-col">
-                  <CardHeader className="text-center pb-4 flex-shrink-0">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary/20 transition-colors">
-                      <Bot className="h-8 w-8 text-primary" />
-                    </div>
-                    <CardTitle className="text-lg institutional-text">Chatbot Estudiantil</CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-1 flex items-center justify-center">
-                    <p className="text-sm text-muted-foreground text-center">Haz preguntas y recibe guía paso a paso</p>
-                  </CardContent>
-                </Card>
-              </Link>
-
             </div>
 
             {/* sección de comunicados removida a solicitud */}
@@ -210,8 +193,10 @@ export default function HomePage() {
                   <p className="text-muted-foreground mb-6 max-w-md">
                     Navega por nuestras instalaciones educativas y encuentra ubicaciones específicas dentro del campus
                   </p>
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">
-                    Explorar Mapa Completo
+                  <Button size="lg" className="bg-primary hover:bg-primary/90" asChild>
+                    <Link href="/mapa">
+                      Explorar Mapa Completo
+                    </Link>
                   </Button>
                 </div>
               </div>
@@ -427,50 +412,6 @@ export default function HomePage() {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        )
-
-      case "chatbot":
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="institutional-text text-3xl mb-2">Chatbot de Ayuda</h2>
-              <p className="text-muted-foreground text-lg">
-                Haz preguntas y recibe orientación sobre cualquier tema del colegio
-              </p>
-            </div>
-            
-            <Card className="h-[70vh] flex flex-col">
-              <CardContent className="flex-1 flex flex-col p-0">
-                <div className="flex-1 p-6 overflow-y-auto space-y-4">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-primary/10 p-3 rounded-full">
-                      <Bot className="h-5 w-5 text-primary" />
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-4 max-w-[85%]">
-                      <p className="text-sm">
-                        ¡Hola! Soy tu asistente virtual del colegio. Puedo ayudarte con horarios, 
-                        procesos de matrícula, ubicación de aulas, noticias y más. 
-                        ¿En qué te puedo ayudar hoy?
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="border-t p-4">
-                  <form className="flex gap-2">
-                    <Input 
-                      placeholder="Escribe tu pregunta..."
-                      className="flex-1"
-                    />
-                    <Button type="submit">
-                      <Send className="h-4 w-4 mr-2" />
-                      Enviar
-                    </Button>
-                  </form>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         )
 
